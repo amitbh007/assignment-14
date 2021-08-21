@@ -50,7 +50,7 @@ const CredentialsSchema: SchemaObject = {
     },
     password: {
       type: 'string',
-      minLength: 8,
+      minLength: 3,
     },
   },
 };
@@ -152,14 +152,13 @@ export class UserController {
         },
       },
     })
-    newUserRequest: NewUserRequest,
+    newUserRequest: User,
   ): Promise<User> {
     const password = await hash(newUserRequest.password, await genSalt());
     newUserRequest.password = password;
 
     const savedUser = await this.userRepository.create(newUserRequest);
 
-    // await this.userRepository.userCredentials(savedUser.id).create({password});
 
     return savedUser;
   }
@@ -196,6 +195,7 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/users')
   @response(200, {
     description: 'Array of User model instances',
@@ -213,7 +213,7 @@ export class UserController {
   ): Promise<User[]> {
     return this.userRepository.find(filter);
   }
-
+  
   @patch('/users')
   @response(200, {
     description: 'User PATCH success count',
@@ -233,6 +233,7 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
+  @authenticate('jwt')
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -278,6 +279,7 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
+  @authenticate('jwt')
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',

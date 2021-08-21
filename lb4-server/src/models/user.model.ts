@@ -2,6 +2,8 @@ import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Customer} from './customer.model';
 import {Role} from './role.model';
 
+
+
 @model()
 export class User extends Entity {
   @property({
