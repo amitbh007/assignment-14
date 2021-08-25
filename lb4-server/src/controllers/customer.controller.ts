@@ -1,4 +1,3 @@
-import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -18,6 +17,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { authenticate, STRATEGY } from 'loopback4-authentication';
 import {Customer} from '../models';
 import {CustomerRepository} from '../repositories';
 
@@ -59,7 +59,7 @@ export class CustomerController {
     return this.customerRepository.count(where);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/customers')
   @response(200, {
     description: 'Array of Customer model instances',
@@ -97,7 +97,7 @@ export class CustomerController {
     return this.customerRepository.updateAll(customer, where);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/customers/{id}')
   @response(200, {
     description: 'Customer model instance',

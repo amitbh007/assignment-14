@@ -54,7 +54,7 @@ client :
 * go to http://localhost:4200/register and create a user
 * now go to http://localhost:4200/login and login with the user created
 * initially a newly created user will be assigned the role having key 1 (SUPER_ADMIN) but you can edit the roles and user info.
-* a non logged in user will be redirect to the login page if he/she tries to acces the protected routes
+* a non logged in user will be redirect to the login page if he/she tries to access the protected routes
 
 
 <br />

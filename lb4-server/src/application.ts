@@ -13,10 +13,13 @@ import {CrudRestComponent} from '@loopback/rest-crud';
 import { PasswordHasherBinding, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './keys';
 import { MyuserService } from './services/user-service';
 import { BcryptHasher } from './services/hasher.password.bcrypt';
-import { JWTService } from './services/jwt-service';
-import { AuthenticationComponent } from '@loopback/authentication';
-import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
+// import { AuthenticationComponent } from '@loopback/authentication';
+import {AuthenticationComponent, Strategies} from 'loopback4-authentication';
+import { JWTAuthenticationComponent} from '@loopback/authentication-jwt';
 import { PostgreDbDataSource } from './datasources';
+import { LocalPasswordVerifyProvider } from './services/localPassowrdVerifyProvider';
+import { JWTService } from './services/jwt-service';
+import { BearerTokenVerifyProvider } from './services/bearerTokenVerifyProvider';
 
 export {ApplicationConfig};
 
@@ -34,6 +37,14 @@ export class Lb4ServerApplication extends BootMixin(
 
     // Set up the custom sequence
     this.sequence(MySequence);
+
+    this.bind(Strategies.Passport.LOCAL_PASSWORD_VERIFIER).toProvider(
+      LocalPasswordVerifyProvider,
+    );
+
+    this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(
+      BearerTokenVerifyProvider,
+    );
 
     this.bind(PasswordHasherBinding.PASSWORD_HASHER).toClass(BcryptHasher);
     this.bind(PasswordHasherBinding.ROUNDS).to(10);

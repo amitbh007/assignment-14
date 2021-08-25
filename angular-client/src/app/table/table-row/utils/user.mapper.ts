@@ -23,6 +23,10 @@ export const outputKeyMap = {
         return undefined;
     },
 
+    "username":(user:User,key:string)=>{
+        return undefined;
+    },
+
     "users":(customer:Customer,key:string)=>{
         console.log("here",customer);
         return `<a style="color:blue;" href="/customers/${customer.id}/users" >${customer.users.length}</a>`;
@@ -52,6 +56,10 @@ export const editKeyMap = {
     },
 
     "password":(user:User,key:string)=>{
+        return undefined;
+    },
+
+    "username":(user:User,key:string)=>{
         return undefined;
     },
 

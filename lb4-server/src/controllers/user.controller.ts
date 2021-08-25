@@ -1,4 +1,4 @@
-import { inject } from '@loopback/core';
+import { Getter, inject } from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -28,8 +28,9 @@ import {UserRepository} from '../repositories';
 import { JWTService } from '../services/jwt-service';
 import { MyuserService } from '../services/user-service';
 import { Credentials } from '@loopback/authentication-jwt';
-import { authenticate } from '@loopback/authentication';
+import { authenticate as jwtAuth } from '@loopback/authentication';
 import { genSalt, hash } from 'bcryptjs';
+import { authenticate, AuthenticationBindings, STRATEGY } from 'loopback4-authentication';
 
 @model()
 export class NewUserRequest extends User {
@@ -74,6 +75,7 @@ export class UserController {
     @repository(UserRepository) protected userRepository: UserRepository,
   ) {}
 
+  @authenticate(STRATEGY.LOCAL)
   @post('/users/login', {
     responses: {
       '200': {
@@ -94,19 +96,17 @@ export class UserController {
     },
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
+    @requestBody(CredentialsRequestBody) credentials: {username:"string",password:"string"},
+    @inject(AuthenticationBindings.CURRENT_USER)
+    getCurrentUser:any
   ): Promise<{token: string}> {
-    // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile = this.userService.convertToUserProfile(user);
-    console.log("userProfile");
-    // create a JSON Web Token based on the user profile
-    const token = await this.jwtService.generateToken(userProfile);
+    const token = await this.jwtService.generateToken(getCurrentUser);
+    console.log("credentials",credentials);
+    console.log("logged in user",getCurrentUser);
     return {token};
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/whoAmI', {
     responses: {
       '200': {
@@ -122,10 +122,11 @@ export class UserController {
     },
   })
   async whoAmI(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-  ): Promise<string> {
-    return currentUserProfile[securityId];
+    @inject(AuthenticationBindings.CURRENT_USER)
+    getCurrentUser:User
+    
+  ): Promise<User> {
+    return getCurrentUser;
   }
 
   @post('/signup', {
@@ -195,7 +196,8 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/users')
   @response(200, {
     description: 'Array of User model instances',
@@ -233,7 +235,7 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -279,7 +281,7 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',

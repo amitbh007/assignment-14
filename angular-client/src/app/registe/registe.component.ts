@@ -17,7 +17,8 @@ export class RegisteComponent implements OnInit {
     address:"",
     email:"",
     phone:"",
-    // customerId:null,
+    username:"",
+    customerId:1,
     password:""
   }
   id:number

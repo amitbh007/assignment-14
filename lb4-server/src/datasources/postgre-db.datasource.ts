@@ -9,7 +9,7 @@ const config = {
   port: 5432,
   user: 'user_1',
   password: '@MITbh123',
-  database: 'lb4db-sf2'
+  database: 'lb4db-auth'
 };
 
 // Observe application's life cycle to disconnect the datasource when

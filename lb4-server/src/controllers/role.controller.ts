@@ -59,7 +59,6 @@ export class RoleController {
     return this.roleRepository.count(where);
   }
 
-  @authenticate('jwt')
   @get('/roles')
   @response(200, {
     description: 'Array of Role model instances',

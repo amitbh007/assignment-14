@@ -1,4 +1,3 @@
-import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -16,6 +15,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import { authenticate, STRATEGY } from 'loopback4-authentication';
 import {
   Customer,
   User,
@@ -27,7 +27,7 @@ export class CustomerUserController {
     @repository(CustomerRepository) protected customerRepository: CustomerRepository,
   ) { }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @get('/customers/{id}/users', {
     responses: {
       '200': {

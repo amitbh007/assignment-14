@@ -1,7 +1,10 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import { HttpErrors } from '@loopback/rest';
 import {PostgreDbDataSource} from '../datasources';
+import { PasswordHasherBinding } from '../keys';
 import {User, UserRelations, Customer, Role} from '../models';
+import { BcryptHasher } from '../services/hasher.password.bcrypt';
 import {CustomerRepository} from './customer.repository';
 import {RoleRepository} from './role.repository';
 
@@ -29,4 +32,6 @@ export class UserRepository extends DefaultCrudRepository<
     this.customer = this.createBelongsToAccessorFor('customer', customerRepositoryGetter,);
     this.registerInclusionResolver('customer', this.customer.inclusionResolver);
   }
+
+  
 }
